@@ -3,10 +3,8 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));   // 👈 추가
 const __filename = fileURLToPath(import.meta.url);   // 👈 추가
 
 import express from "express";
-import mariadb from "mariadb";
+
 import cors from "cors";
-import dotenv from 'dotenv'
-dotenv.config();
 
 const app = express()
 
@@ -21,14 +19,6 @@ app.get('/', function (req, res) {
   );
 });
 
-// db connection
-const pool = mariadb.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password : process.env.DB_PWD,
-    database:process.env.DB_NAME,
-    connectionLimit: 5
-});
 app.get('/getAllUsers', function (req, res) {
     // MariaDB 연결 드라이버를 통해 서버의 DBMS 데이터 접근
 
@@ -54,7 +44,7 @@ app.get('/getAllUsers', function (req, res) {
 
 // es6 : import(가져오기), export(내보내기)
 // CommonJS : require(가져오기), module.exports 또는 exports(내보내기)
-const port = 3000;
+const port = 3000; // 개발중 : 3000, 개발완료 : 30
 const setting = {
   app,
   port
