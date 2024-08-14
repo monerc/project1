@@ -1,6 +1,7 @@
 import mariadb from "mariadb";
 import dotenv from 'dotenv'
 dotenv.config();
+import bcrypt from "bcrypt";
 // db connection
 const pool = mariadb.createPool({
     host: process.env.DB_HOST,
@@ -37,16 +38,18 @@ const getOneUser = async (userId) => {
     }
 }
 
-const addOneUser = async (userId, userName, userEmail) => {
+const addUser = async (id, pwd, name, nick, email, hint) => {
     let conn; // 연결설정 변수(연결POOL)
+    const saltRounds = 10;
+    const hashedPwd = await bcrypt.hash(pwd, saltRounds); // 해싱된 비밀번호 생성
     try {
         conn = await pool.getConnection();
-        const rows = await conn.query("INSERT INTO users (id, name, email) VALUES (?,?,?)", [userId, userName, userEmail]);
+        const rows = await conn.query("INSERT INTO users (id, pwd, name, nickname, email, pwd_hint) VALUES (?,?,?,?,?,?)", [id, hashedPwd, name, nick, email, hint]);
         return rows;
     } catch(err) { 
         console.log(err);
     } finally {
-        if(conn) conn.end();
+        if(conn) conn.end(); // .end() : pool 자체 종료 --> 시간, 네트워크 --> 개발비용 증가 또는 / .release() : 연결 해제
     }
 }
 // 객체(Object) : 문자열, 숫자, 논리, 함수, 클래스, 심볼...
@@ -54,7 +57,7 @@ const addOneUser = async (userId, userName, userEmail) => {
 const userModel = {
     getAllUsers,
     getOneUser,
-    addOneUser
+    addUser
 }
 
 export default userModel;

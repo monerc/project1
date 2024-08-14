@@ -28,22 +28,25 @@ const getOneUser = async (req, res) => {
     }
 }
 
-const addOneUser = async (req, res) => {
+const addUser = async (req, res) => {
     // post 요청 : FORM(HTML5) or AJAX로만 요청가능
-    const {id, name, email} = req.body;
+    const {id, pwd, name, nick, email, hint} = req.body;
     try {
-        const users = await userModel.addOneUser(id,name,email); // 사용자의 정보를 모두 조회해서 users 변수에 담아
-        res.status(200).json({
-            status : "success",
-            message : "사용자 등록 성공"
-        });
+        const users = await userModel.addUser(id, pwd, name, nick, email, hint); // 사용자의 정보를 모두 조회해서 users 변수에 담아
+        if (users) {
+            res.status(200).json({
+                status : 'success',
+                message : "사용자 등록 성공!",
+            });
+        } else {
+            res.status(500).json({
+                status : 'fail',
+                message : "사용자 등록 실패!"
+            })
+        }
         // res.redirect("/"); //처음페이지로 이동하기
     } catch (err) {
         console.log(err);
-        res.status(500).json({
-            status: "failed",
-            message : "데이터베이스 연결 실패"
-        })
     }
 }
 
@@ -51,7 +54,7 @@ const addOneUser = async (req, res) => {
 const userController = {
     getAllUsers,
     getOneUser,
-    addOneUser
+    addUser
 }
 
 export default userController;
